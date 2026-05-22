@@ -1,4 +1,4 @@
-name: DevOps CI Pipeline
+name: DevOps CI/CD
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  validate:
+  deploy:
 
     runs-on: ubuntu-latest
 
@@ -20,10 +20,24 @@ jobs:
           echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > backend/.env
           echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> backend/.env
 
-      - name: Build Containers
-        run: |
-          docker compose build
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Validate Compose
+      - name: Build Backend
         run: |
-          docker compose config
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/taskmanager-backend ./backend
+
+      - name: Push Backend
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/taskmanager-backend
+
+      - name: Build Frontend
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/taskmanager-frontend ./frontend
+
+      - name: Push Frontend
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/taskmanager-frontend
