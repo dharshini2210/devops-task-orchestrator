@@ -13,8 +13,12 @@ jobs:
 
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Create ENV
+        run: |
+          echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > backend/.env
+          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> backend/.env
 
       - name: Build Containers
         run: |
