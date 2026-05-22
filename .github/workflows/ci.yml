@@ -7,24 +7,19 @@ on:
 
 jobs:
 
-  build:
+  validate:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Build Backend Image
+      - name: Build Containers
         run: |
-          docker build -t backend ./backend
+          docker compose build
 
-      - name: Build Frontend Image
+      - name: Validate Compose
         run: |
-          docker build -t frontend ./frontend
+          docker compose config
